@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  victim:
+    image: python:3.11-slim
+    container_name: victim-machine
+    environment:
+      - DISPLAY=:99
+    volumes:
+      - ./keylogger:/app
+      - exfil_data:/tmp/.sys_update_cache
+    working_dir: /app
+    command: >
+      bash -c "
+      apt-get update -qq &&
+      apt-get install -y -qq xvfb xdotool python3-tk python3-dev &&
+      pip install -q pynput &&
+      Xvfb :99 -screen 0 1024x768x24 &
+      sleep 1 &&
+      bash"
+    stdin_open: true
+    tty: true
+
+volumes:
+  exfil_data:
